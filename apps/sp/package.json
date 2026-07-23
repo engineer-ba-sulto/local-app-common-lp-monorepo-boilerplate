@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@expo/ui": "~57.0.7",
+    "babel-preset-expo": "~57.0.0",
     "date-fns": "^4.4.0",
+    "drizzle-orm": "^0.45.2",
     "expo": "~57.0.8",
     "expo-constants": "~57.0.7",
     "expo-device": "~57.0.1",
@@ -41,6 +43,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "babel-plugin-inline-import": "^3.0.0",
+    "drizzle-kit": "^0.31.10",
     "typescript": "~6.0.3"
   }
 }

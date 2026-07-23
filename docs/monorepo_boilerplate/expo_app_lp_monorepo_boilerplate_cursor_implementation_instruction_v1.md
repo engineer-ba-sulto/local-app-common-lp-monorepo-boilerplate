@@ -191,7 +191,7 @@ apps/lp = Astro LP の枠（stub のみ）
 | [BP-002](../ticket_management/done/2026-07-23/2026-07-22_bp_002_sp_expo_align.md) | 1 | `apps/sp` を create expo-app 済みから仕様へ寄せる（Bun scripts・ライトモード・依存） | BP-001 | 0.5〜1日 | `app.config.ts`、`eas.json`、Expo UI / Haptics / Reanimated smoke | done |
 | [BP-003](../ticket_management/done/2026-07-23/2026-07-22_bp_003_sp_nav_home_swiftui.md) | 1 | `apps/sp` folder・NativeTabs 1タブ・Stack・platform pair | BP-002 | 0.5日 | `/` が SwiftUI ホーム、settings 空ルート、not-found | done |
 | [BP-004](../ticket_management/done/2026-07-23/2026-07-22_bp_004_sp_local_date.md) | 2 | `apps/sp` local-date + unit test | BP-002 | 0.5日 | `YYYY-MM-DD` 境界 test 成功 | done |
-| [BP-005](../ticket_management/todo/2026-07-22_bp_005_sp_drizzle_db.md) | 2 | `apps/sp` Drizzle db・Kit・migration bundle・最小 schema | BP-002 | 0.5〜1日 | 空DBへ migration 後にルート表示 | todo |
+| [BP-005](../ticket_management/done/2026-07-23/2026-07-22_bp_005_sp_drizzle_db.md) | 2 | `apps/sp` Drizzle db・Kit・migration bundle・最小 schema | BP-002 | 0.5〜1日 | 空DBへ migration 後にルート表示 | done |
 | [BP-006](../ticket_management/todo/2026-07-22_bp_006_sp_analytics_noop.md) | 2 | `apps/sp` AnalyticsClient no-op・images/haptics 枠 | BP-003 | 0.5日 | no-op のみ。PostHog SDK 未接続 | todo |
 | [BP-007](../ticket_management/todo/2026-07-22_bp_007_lp_astro_stub.md) | 3 | `apps/lp` を create cloudflare 済みから stub・README へ寄せる | BP-001 | 0.5日 | placeholder ページと「後続実装」README | todo |
 | [BP-008](../ticket_management/todo/2026-07-22_bp_008_integration_readme.md) | 4 | 統合検証・コピー手順 README 完成 | BP-003〜BP-007 | 0.5日 | 完了ゲートを満たす | todo |
