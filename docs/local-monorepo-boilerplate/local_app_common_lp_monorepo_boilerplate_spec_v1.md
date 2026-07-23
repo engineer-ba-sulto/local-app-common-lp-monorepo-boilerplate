@@ -1,7 +1,7 @@
 # Local App Common + LP モノレポ Boilerplate 仕様書 v1（二段目）
 
 - 作成日: 2026-07-22
-- 状態: 仕様確定・コード未着手（**一段目 BP-008 完了後に実装**）
+- 状態: 仕様確定・**二段目実装完了**（LC-000〜LC-006 done）
 - 名前: `local-app-common-lp-monorepo-boilerplate`
 - 実装先: `DemoProject/local-app-common-lp-monorepo-boilerplate/`
 - 上流: 一段目 `expo-app-lp-monorepo-boilerplate`（同梱外）

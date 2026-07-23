@@ -41,7 +41,7 @@ done（2026-07-23）。
 
 ## 後続チケット
 
-- [LC-006 統合検証・README](../../todo/2026-07-23_lc_006_integration_readme.md)（LC-000〜LC-005 完了後）
+- [LC-006 統合検証・README](./2026-07-23_lc_006_integration_readme.md)（done）
 
 ## 完了メモ
 
@@ -64,4 +64,4 @@ done（2026-07-23）。
 
 ### 次の候補
 
-- [LC-006](../../todo/2026-07-23_lc_006_integration_readme.md) 統合検証・README（一段目差分・製品コピー手順）
+- [LC-006](./2026-07-23_lc_006_integration_readme.md) 統合検証・README（一段目差分・製品コピー手順）
