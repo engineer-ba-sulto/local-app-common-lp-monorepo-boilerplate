@@ -42,7 +42,8 @@ bun run dev:lp
 | `dev` | mprocs（sp / lp） |
 | `dev:sp` / `dev:lp` | 個別起動 |
 | `check` | Biome check |
-| `typecheck:sp` / `test:sp` | sp 向け（後続チケットで整備） |
+| `typecheck:sp` / `check:sp` | sp 向け typecheck / Biome |
+| `test:sp` | sp unit test（BP-004 以降） |
 
 ## コピー・rename
 

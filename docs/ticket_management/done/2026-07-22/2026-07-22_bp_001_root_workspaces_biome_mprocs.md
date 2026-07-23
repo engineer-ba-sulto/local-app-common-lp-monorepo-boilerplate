@@ -42,7 +42,7 @@ done（2026-07-22）。
 
 ## 後続チケット
 
-- [BP-002 sp Expo 寄せ](../../todo/2026-07-22_bp_002_sp_expo_align.md)
+- [BP-002 sp Expo 寄せ](../2026-07-23/2026-07-22_bp_002_sp_expo_align.md)
 - [BP-007 lp Astro stub](../../todo/2026-07-22_bp_007_lp_astro_stub.md)
 
 ## 完了メモ

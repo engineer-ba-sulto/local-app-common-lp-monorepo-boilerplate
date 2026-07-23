@@ -188,7 +188,7 @@ apps/lp = Astro LP の枠（stub のみ）
 | ID | Phase | チケット | 依存 | 見積 | 完了判定 | 状態 |
 | --- | ---: | --- | --- | ---: | --- | --- |
 | [BP-001](../ticket_management/done/2026-07-22/2026-07-22_bp_001_root_workspaces_biome_mprocs.md) | 0 | ルート Bun workspaces・`bunfig.toml`・Biome・mprocs・README骨子（`bun init` 済みを寄せる） | 所有者 §2.1 完了 | 0.5日 | workspaces、`bunfig.toml`（isolated）、`mprocs.yaml`、`"dev": "mprocs"`、Biome、`bun install` 成功 | done |
-| [BP-002](../ticket_management/todo/2026-07-22_bp_002_sp_expo_align.md) | 1 | `apps/sp` を create expo-app 済みから仕様へ寄せる（Bun scripts・ライトモード・依存） | BP-001 | 0.5〜1日 | `app.config.ts`、`eas.json`、Expo UI / Haptics / Reanimated smoke | todo |
+| [BP-002](../ticket_management/done/2026-07-23/2026-07-22_bp_002_sp_expo_align.md) | 1 | `apps/sp` を create expo-app 済みから仕様へ寄せる（Bun scripts・ライトモード・依存） | BP-001 | 0.5〜1日 | `app.config.ts`、`eas.json`、Expo UI / Haptics / Reanimated smoke | done |
 | [BP-003](../ticket_management/todo/2026-07-22_bp_003_sp_nav_home_swiftui.md) | 1 | `apps/sp` folder・NativeTabs 1タブ・Stack・platform pair | BP-002 | 0.5日 | `/` が SwiftUI ホーム、settings 空ルート、not-found | todo |
 | [BP-004](../ticket_management/todo/2026-07-22_bp_004_sp_local_date.md) | 2 | `apps/sp` local-date + unit test | BP-002 | 0.5日 | `YYYY-MM-DD` 境界 test 成功 | todo |
 | [BP-005](../ticket_management/todo/2026-07-22_bp_005_sp_drizzle_db.md) | 2 | `apps/sp` Drizzle db・Kit・migration bundle・最小 schema | BP-002 | 0.5〜1日 | 空DBへ migration 後にルート表示 | todo |
