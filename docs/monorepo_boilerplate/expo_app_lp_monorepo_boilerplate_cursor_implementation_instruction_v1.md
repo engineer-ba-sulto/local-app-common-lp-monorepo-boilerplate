@@ -3,7 +3,7 @@
 - 作成日: 2026-07-22
 - 実装先: `DemoProject/expo-app-lp-monorepo-boilerplate/`
 - 所有者用意: 仕様書 §2.1 の `bun init` / `bun create` 済み。エージェントはそれらを再実行しない
-- 状態: BP-001〜BP-007 done・次は BP-008
+- 状態: BP-001〜BP-008 done（一段目ボイラープレート完了）
 - 正本仕様: [仕様書 v1](./expo_app_lp_monorepo_boilerplate_spec_v1.md)
 - 実装チケット: 本書「11. 実装チケット一覧」（BP-001〜BP-008）
 - 下流: 二段目（共通）→ みずどき / 現場日報（同梱外）
@@ -154,18 +154,18 @@ apps/lp = Astro LP の枠（stub のみ）
 
 ## 10. ボイラープレート完了ゲート
 
-- [ ] `bun install` 成功（`bunfig.toml` の isolated linker）
-- [ ] `bunfig.toml` と `mprocs.yaml` がルートにある
-- [ ] `bun run dev` で mprocs が起動する（sp / lp）
-- [ ] `bun run typecheck:sp` 成功
-- [ ] `bun run check` 成功
-- [ ] `bun run test:sp` 成功（local-date 等）
-- [ ] Expo Go で SwiftUI ホーム雛形
-- [ ] migration 適用後にルート表示
-- [ ] Analytics no-op（送信なし）
-- [ ] `apps/lp` stub と README 存在
-- [ ] README にコピー・rename・mprocs・下流指示書リンク
-- [ ] 製品ドメインコードが混入していない
+- [x] `bun install` 成功（`bunfig.toml` の isolated linker）
+- [x] `bunfig.toml` と `mprocs.yaml` がルートにある
+- [x] `bun run dev` で mprocs が起動する（sp / lp）※TTY 必須。個別 `dev:sp` / `dev:lp` 起動確認済み
+- [x] `bun run typecheck:sp` 成功
+- [x] `bun run check` 成功
+- [x] `bun run test:sp` 成功（local-date 等）
+- [x] Expo Go で SwiftUI ホーム雛形 ※コード確認（`home-screen.ios.tsx`）。実機 Expo Go は所有者確認推奨
+- [x] migration 適用後にルート表示 ※`useAppBootstrap` + migration gate 配線確認
+- [x] Analytics no-op（送信なし）
+- [x] `apps/lp` stub と README 存在
+- [x] README にコピー・rename・mprocs・下流指示書リンク
+- [x] 製品ドメインコードが混入していない
 
 ## 11. 実装チケット一覧
 
@@ -194,7 +194,7 @@ apps/lp = Astro LP の枠（stub のみ）
 | [BP-005](../ticket_management/done/2026-07-23/2026-07-22_bp_005_sp_drizzle_db.md) | 2 | `apps/sp` Drizzle db・Kit・migration bundle・最小 schema | BP-002 | 0.5〜1日 | 空DBへ migration 後にルート表示 | done |
 | [BP-006](../ticket_management/done/2026-07-23/2026-07-22_bp_006_sp_analytics_noop.md) | 2 | `apps/sp` AnalyticsClient no-op・images/haptics 枠 | BP-003 | 0.5日 | no-op のみ。PostHog SDK 未接続 | done |
 | [BP-007](../ticket_management/done/2026-07-23/2026-07-22_bp_007_lp_astro_stub.md) | 3 | `apps/lp` を create cloudflare 済みから stub・README へ寄せる | BP-001 | 0.5日 | placeholder ページと「後続実装」README | done |
-| [BP-008](../ticket_management/todo/2026-07-22_bp_008_integration_readme.md) | 4 | 統合検証・コピー手順 README 完成 | BP-003〜BP-007 | 0.5日 | 完了ゲートを満たす | todo |
+| [BP-008](../ticket_management/done/2026-07-23/2026-07-22_bp_008_integration_readme.md) | 4 | 統合検証・コピー手順 README 完成 | BP-003〜BP-007 | 0.5日 | 完了ゲートを満たす | done |
 
 ### 主な実装対象
 
