@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/pvolok/mprocs/master/schemas/mprocs.json
 
-proc_list_title: expo-app-lp-monorepo
+proc_list_title: local-app-common-lp-monorepo
 
 procs:
   sp:

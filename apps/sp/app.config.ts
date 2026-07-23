@@ -1,23 +1,23 @@
 import type { ConfigContext, ExpoConfig } from "expo/config";
 
 /**
- * 汎用ボイラープレート用。製品コピー後に name / slug / scheme /
- * bundleIdentifier を差し替える（仕様書 §7 rename チェックリスト）。
- * 本番 bundle id・プライバシー URL はここでは確定しない。
+ * 二段目（local-app-common）用。製品コピー後に name / slug / scheme /
+ * bundleIdentifier を差し替える（ルート README の rename チェックリスト）。
+ * 本番 bundle id・プライバシー URL・製品名はここでは確定しない。
  */
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: "sp",
-  slug: "sp",
+  name: "Local App Common",
+  slug: "local-app-common",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
-  scheme: "sp",
+  scheme: "local-app-common",
   userInterfaceStyle: "light",
   ios: {
     icon: "./assets/expo.icon",
     // 製品コピー時に差し替え。EAS / ASC 確定前の仮値。
-    bundleIdentifier: "com.example.sp",
+    bundleIdentifier: "com.example.localappcommon",
   },
   android: {
     adaptiveIcon: {
@@ -27,8 +27,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
     predictiveBackGestureEnabled: false,
-    // 製品コピー時に差し替え。本一段目は iPhone 主対象。
-    package: "com.example.sp",
+    // 製品コピー時に差し替え。本二段目は iPhone 主対象の共通骨格。
+    package: "com.example.localappcommon",
   },
   web: {
     output: "static",
@@ -37,12 +37,26 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     "expo-router",
     "expo-sqlite",
+    "expo-image",
+    "expo-localization",
     [
       "expo-splash-screen",
       {
         backgroundColor: "#208AEF",
         image: "./assets/images/splash-icon.png",
         imageWidth: 76,
+      },
+    ],
+    // 製品コピー時に差し替え可。ドメイン固有文言は二段目では入れない。
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "写真を選択するために、フォトライブラリへのアクセスが必要です。",
+        cameraPermission:
+          "写真を撮影するために、カメラへのアクセスが必要です。",
+        // 静止画のみ。動画録音用マイク権限は不要。
+        microphonePermission: false,
       },
     ],
   ],
