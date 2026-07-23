@@ -1,13 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
+  createExpoImageDisplayContract,
   createStoredImageFilename,
   extensionFromUri,
+  type ImageCleanupFs,
   type ImageCopyFs,
   isImagePickerPermissionError,
   joinDocumentsRelativePath,
   mapImagePickerLaunchResult,
+  resolveDocumentsDisplayUri,
   resolveImageCopy,
   resolveImagePick,
+  resolveUnreferencedImageCleanup,
 } from "./images";
 
 describe("joinDocumentsRelativePath", () => {
@@ -230,5 +234,131 @@ describe("resolveImageCopy", () => {
     ).rejects.toThrow("rename failed");
     expect(files.has("plants/fixed.jpg.partial")).toBe(false);
     expect(files.has("plants/fixed.jpg")).toBe(false);
+  });
+});
+
+describe("resolveDocumentsDisplayUri", () => {
+  test("joins documents URI and relative path", () => {
+    expect(resolveDocumentsDisplayUri("file:///docs", "plants/abc.jpg")).toBe(
+      "file:///docs/plants/abc.jpg",
+    );
+    expect(resolveDocumentsDisplayUri("file:///docs/", "plants/abc.jpg")).toBe(
+      "file:///docs/plants/abc.jpg",
+    );
+  });
+
+  test("returns null for missing or empty relative path", () => {
+    expect(resolveDocumentsDisplayUri("file:///docs", null)).toBeNull();
+    expect(resolveDocumentsDisplayUri("file:///docs", undefined)).toBeNull();
+    expect(resolveDocumentsDisplayUri("file:///docs", "  ")).toBeNull();
+    expect(resolveDocumentsDisplayUri("file:///docs", "../")).toBeNull();
+  });
+});
+
+describe("createExpoImageDisplayContract", () => {
+  test("builds source and optional placeholder", () => {
+    expect(
+      createExpoImageDisplayContract("file:///docs/plants/a.jpg", {
+        blurhash: "LKO2?U%2Tw=w]~RBVZRi};RPxuwH",
+      }),
+    ).toEqual({
+      source: { uri: "file:///docs/plants/a.jpg" },
+      placeholder: { blurhash: "LKO2?U%2Tw=w]~RBVZRi};RPxuwH" },
+    });
+  });
+
+  test("null uri yields null source", () => {
+    expect(createExpoImageDisplayContract(null)).toEqual({
+      source: null,
+      placeholder: undefined,
+    });
+    expect(createExpoImageDisplayContract(undefined, 1)).toEqual({
+      source: null,
+      placeholder: 1,
+    });
+  });
+});
+
+function createMemoryCleanupFs(options?: {
+  failList?: boolean;
+  failDeletePaths?: Set<string>;
+}): {
+  fs: ImageCleanupFs;
+  files: Set<string>;
+} {
+  const files = new Set<string>();
+  const fs: ImageCleanupFs = {
+    listRelativeFilePaths: (relativeSubdir) => {
+      if (options?.failList) {
+        throw new Error("list failed");
+      }
+      const prefix = `${relativeSubdir}/`;
+      return [...files].filter(
+        (path) => path === relativeSubdir || path.startsWith(prefix),
+      );
+    },
+    deleteRelativePathIfExists: (relativePath) => {
+      if (options?.failDeletePaths?.has(relativePath)) {
+        throw new Error(`delete failed: ${relativePath}`);
+      }
+      files.delete(relativePath);
+    },
+  };
+  return { fs, files };
+}
+
+describe("resolveUnreferencedImageCleanup", () => {
+  test("returns empty for empty subdir", async () => {
+    const { fs } = createMemoryCleanupFs();
+    await expect(
+      resolveUnreferencedImageCleanup("  ", ["plants/a.jpg"], fs),
+    ).resolves.toEqual({ deleted: [], failed: [] });
+  });
+
+  test("deletes unreferenced files and keeps referenced", async () => {
+    const { fs, files } = createMemoryCleanupFs();
+    files.add("plants/keep.jpg");
+    files.add("plants/gone.jpg");
+    files.add("plants/orphan.partial");
+    const result = await resolveUnreferencedImageCleanup(
+      "plants/",
+      ["plants/keep.jpg"],
+      fs,
+    );
+    expect(result.deleted.sort()).toEqual([
+      "plants/gone.jpg",
+      "plants/orphan.partial",
+    ]);
+    expect(result.failed).toEqual([]);
+    expect(files.has("plants/keep.jpg")).toBe(true);
+    expect(files.has("plants/gone.jpg")).toBe(false);
+  });
+
+  test("ignores files outside subdir", async () => {
+    const { fs, files } = createMemoryCleanupFs();
+    files.add("plants/a.jpg");
+    files.add("reports/b.jpg");
+    const result = await resolveUnreferencedImageCleanup("plants", [], fs);
+    expect(result.deleted).toEqual(["plants/a.jpg"]);
+    expect(files.has("reports/b.jpg")).toBe(true);
+  });
+
+  test("list failure yields empty result without throw", async () => {
+    const { fs } = createMemoryCleanupFs({ failList: true });
+    await expect(
+      resolveUnreferencedImageCleanup("plants", [], fs),
+    ).resolves.toEqual({ deleted: [], failed: [] });
+  });
+
+  test("delete failure is collected in failed", async () => {
+    const { fs, files } = createMemoryCleanupFs({
+      failDeletePaths: new Set(["plants/locked.jpg"]),
+    });
+    files.add("plants/locked.jpg");
+    files.add("plants/ok.jpg");
+    const result = await resolveUnreferencedImageCleanup("plants", [], fs);
+    expect(result.deleted).toEqual(["plants/ok.jpg"]);
+    expect(result.failed).toEqual(["plants/locked.jpg"]);
+    expect(files.has("plants/locked.jpg")).toBe(true);
   });
 });

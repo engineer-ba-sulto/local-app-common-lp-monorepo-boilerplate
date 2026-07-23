@@ -15,10 +15,8 @@
  * - copy temp URI → `documents/<subdir>/` (`expo-file-system`)
  *   Failures best-effort delete staging / destination so partial files
  *   are unlikely to remain.
- *
- * ## Still stage 2 (later tickets)
- * - display URI / placeholder contract for `expo-image` (LC-004)
- * - best-effort unreferenced-file cleanup (LC-004)
+ * - display URI / placeholder contract for `expo-image`
+ * - best-effort unreferenced-file cleanup under a product-chosen subdir
  *
  * Does **not** use `expo-camera`. Camera capture goes through
  * `expo-image-picker`'s `launchCameraAsync`.
@@ -279,6 +277,217 @@ export async function copyImageToDocuments(
         ...documentsRelativeParts(fromRelativePath),
       );
       file.rename(toFileName);
+    },
+    deleteRelativePathIfExists: (relativePath) => {
+      const file = new File(
+        Paths.document,
+        ...documentsRelativeParts(relativePath),
+      );
+      if (file.exists) {
+        file.delete();
+      }
+    },
+  });
+}
+
+/**
+ * `expo-image` `source` shape for a local documents file.
+ * Pass as `<Image source={contract.source} />` when non-null.
+ */
+export type ExpoImageSource = { uri: string };
+
+/**
+ * `expo-image` `placeholder` contract.
+ * Product supplies blurhash, a remote/local URI, a `require()` asset id,
+ * or an `ImageSource`-like object — this module does not ship UI assets.
+ */
+export type ExpoImagePlaceholder =
+  | string
+  | number
+  | { uri: string }
+  | { blurhash: string }
+  | { thumbhash: string };
+
+/**
+ * Props fragment for `<Image>` from `expo-image`.
+ * No React component is provided here (product UI stays in product apps).
+ */
+export type ExpoImageDisplayContract = {
+  source: ExpoImageSource | null;
+  placeholder: ExpoImagePlaceholder | undefined;
+};
+
+/**
+ * Join a documents directory URI with a stored relative path.
+ * Pure string helper — no filesystem access. Returns `null` when the
+ * relative path is empty / missing after normalization.
+ * Exported for unit tests.
+ */
+export function resolveDocumentsDisplayUri(
+  documentsDirectoryUri: string,
+  relativePath: StoredImageRelativePath | null | undefined,
+): string | null {
+  if (relativePath == null) {
+    return null;
+  }
+  const relative = joinDocumentsRelativePath(relativePath);
+  if (!relative) {
+    return null;
+  }
+  const base = documentsDirectoryUri.endsWith("/")
+    ? documentsDirectoryUri
+    : `${documentsDirectoryUri}/`;
+  return `${base}${relative}`;
+}
+
+/**
+ * Build the shared `expo-image` display contract from a display URI.
+ * Pure — does not touch the filesystem or React.
+ */
+export function createExpoImageDisplayContract(
+  displayUri: string | null | undefined,
+  placeholder?: ExpoImagePlaceholder,
+): ExpoImageDisplayContract {
+  return {
+    source: displayUri ? { uri: displayUri } : null,
+    placeholder,
+  };
+}
+
+/**
+ * Resolve a documents-relative stored path to an absolute `file://` URI
+ * suitable for `expo-image` `source`. Uses `File.uri` under `Paths.document`.
+ */
+export async function getImageDisplayUri(
+  relativePath: StoredImageRelativePath,
+): Promise<string> {
+  const relative = joinDocumentsRelativePath(relativePath);
+  if (!relative) {
+    throw new Error("Stored image relative path must not be empty");
+  }
+  const { File, Paths } = await import("expo-file-system");
+  const file = new File(Paths.document, ...documentsRelativeParts(relative));
+  return file.uri;
+}
+
+/**
+ * Convenience: documents-relative path → `expo-image` display contract.
+ * Product chooses `placeholder` (blurhash / asset); this helper only wires URI.
+ */
+export async function getExpoImageDisplayContract(
+  relativePath: StoredImageRelativePath | null | undefined,
+  placeholder?: ExpoImagePlaceholder,
+): Promise<ExpoImageDisplayContract> {
+  if (relativePath == null || !joinDocumentsRelativePath(relativePath)) {
+    return createExpoImageDisplayContract(null, placeholder);
+  }
+  const uri = await getImageDisplayUri(relativePath);
+  return createExpoImageDisplayContract(uri, placeholder);
+}
+
+/** Injectable filesystem ops for unreferenced cleanup (unit-test friendly). */
+export type ImageCleanupFs = {
+  listRelativeFilePaths: (
+    relativeSubdir: string,
+  ) => Iterable<string> | Promise<Iterable<string>>;
+  deleteRelativePathIfExists: (relativePath: string) => void | Promise<void>;
+};
+
+/** Result of a best-effort cleanup pass. Never thrown as an error. */
+export type ImageCleanupResult = {
+  deleted: StoredImageRelativePath[];
+  failed: StoredImageRelativePath[];
+};
+
+/**
+ * Delete files under `subdir` that are not in `referencedRelativePaths`.
+ * Failures are collected into `failed` — this function does not throw for
+ * per-file delete errors. Listing / ensure failures yield an empty pass
+ * (best-effort; callers must not treat cleanup as hard success).
+ * Exported for unit tests.
+ */
+export async function resolveUnreferencedImageCleanup(
+  subdir: ImagesSubdir,
+  referencedRelativePaths: Iterable<StoredImageRelativePath>,
+  fs: ImageCleanupFs,
+): Promise<ImageCleanupResult> {
+  const relativeSubdir = joinDocumentsRelativePath(subdir);
+  if (!relativeSubdir) {
+    return { deleted: [], failed: [] };
+  }
+
+  const referenced = new Set(
+    [...referencedRelativePaths]
+      .map((path) => joinDocumentsRelativePath(path))
+      .filter((path) => path.length > 0),
+  );
+
+  let listed: Iterable<string>;
+  try {
+    listed = await fs.listRelativeFilePaths(relativeSubdir);
+  } catch {
+    return { deleted: [], failed: [] };
+  }
+
+  const deleted: StoredImageRelativePath[] = [];
+  const failed: StoredImageRelativePath[] = [];
+
+  for (const rawPath of listed) {
+    const relativePath = joinDocumentsRelativePath(rawPath);
+    if (!relativePath) {
+      continue;
+    }
+    // Only touch files that live under the requested subdir.
+    if (
+      relativePath !== relativeSubdir &&
+      !relativePath.startsWith(`${relativeSubdir}/`)
+    ) {
+      continue;
+    }
+    if (referenced.has(relativePath)) {
+      continue;
+    }
+    try {
+      await fs.deleteRelativePathIfExists(relativePath);
+      deleted.push(relativePath);
+    } catch {
+      failed.push(relativePath);
+    }
+  }
+
+  return { deleted, failed };
+}
+
+/**
+ * Best-effort cleanup of unreferenced image files under `documents/<subdir>/`.
+ * Product passes the set of relative paths still referenced (e.g. from DB).
+ * Never throws — listing / delete failures are swallowed or returned in
+ * `failed`. Does not recurse into nested directories.
+ */
+export async function cleanupUnreferencedImages(
+  subdir: ImagesSubdir,
+  referencedRelativePaths: Iterable<StoredImageRelativePath>,
+): Promise<ImageCleanupResult> {
+  const { Directory, File, Paths } = await import("expo-file-system");
+
+  return resolveUnreferencedImageCleanup(subdir, referencedRelativePaths, {
+    listRelativeFilePaths: (relativeSubdir) => {
+      const dir = new Directory(
+        Paths.document,
+        ...documentsRelativeParts(relativeSubdir),
+      );
+      if (!dir.exists) {
+        return [];
+      }
+      const paths: string[] = [];
+      for (const item of dir.list()) {
+        // Files only — skip nested directories (product chooses flat layout).
+        if (item instanceof Directory) {
+          continue;
+        }
+        paths.push(joinDocumentsRelativePath(relativeSubdir, item.name));
+      }
+      return paths;
     },
     deleteRelativePathIfExists: (relativePath) => {
       const file = new File(
