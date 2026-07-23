@@ -3,7 +3,7 @@
  *
  * ## Path contract (documents)
  * - Persist copied files under the app documents directory:
- *   `FileSystem.documentDirectory` + `<subdir>/` + `<filename>`
+ *   `Paths.document` + `<subdir>/` + `<filename>`
  * - Product chooses `<subdir>` (e.g. `plants/`, `reports/`).
  * - Do not store product photos outside documents.
  * - Relative stored paths (e.g. `plants/abc.jpg`) are the DB-facing values;
@@ -12,17 +12,20 @@
  * ## Implemented
  * - pick one image from camera / library (`expo-image-picker`)
  *   Cancel and permission denial are normal results (not thrown).
+ * - copy temp URI → `documents/<subdir>/` (`expo-file-system`)
+ *   Failures best-effort delete staging / destination so partial files
+ *   are unlikely to remain.
  *
  * ## Still stage 2 (later tickets)
- * - copy temp URI → `documents/<subdir>/` (LC-003)
  * - display URI / placeholder contract for `expo-image` (LC-004)
  * - best-effort unreferenced-file cleanup (LC-004)
  *
  * Does **not** use `expo-camera`. Camera capture goes through
  * `expo-image-picker`'s `launchCameraAsync`.
  *
- * `expo-image-picker` is loaded only inside pick helpers so unit tests of
- * pure mappers do not pull React Native into the Bun test runner.
+ * `expo-image-picker` / `expo-file-system` are loaded only inside public
+ * helpers so unit tests of pure mappers do not pull React Native into the
+ * Bun test runner.
  */
 
 /** Relative subdirectory under the app documents directory (trailing slash optional). */
@@ -145,4 +148,146 @@ export async function pickImageFromCamera(): Promise<ImagePickResult> {
     () => ImagePicker.requestCameraPermissionsAsync(),
     () => ImagePicker.launchCameraAsync(PICKER_OPTIONS),
   );
+}
+
+/** Injectable filesystem ops for copy/save (unit-test friendly). */
+export type ImageCopyFs = {
+  ensureSubdir: (relativeSubdir: string) => void | Promise<void>;
+  copyUriToRelativePath: (
+    sourceUri: string,
+    relativePath: string,
+  ) => Promise<void>;
+  renameRelativePath: (
+    fromRelativePath: string,
+    toFileName: string,
+  ) => void | Promise<void>;
+  deleteRelativePathIfExists: (relativePath: string) => void | Promise<void>;
+};
+
+/**
+ * Extract a safe file extension (with leading `.`) from a URI path.
+ * Query strings and odd extensions are ignored. Exported for unit tests.
+ */
+export function extensionFromUri(uri: string): string {
+  const withoutQuery = uri.split("?")[0] ?? uri;
+  const basename = withoutQuery.split("/").pop() ?? "";
+  const dot = basename.lastIndexOf(".");
+  if (dot <= 0 || dot === basename.length - 1) {
+    return "";
+  }
+  const ext = basename.slice(dot + 1).toLowerCase();
+  if (!/^[a-z0-9]{1,8}$/.test(ext)) {
+    return "";
+  }
+  return `.${ext}`;
+}
+
+/**
+ * Build a unique filename under documents (optionally with extension).
+ * Exported for unit tests.
+ */
+export function createStoredImageFilename(extension = ""): string {
+  const id = crypto.randomUUID().replaceAll("-", "");
+  if (!extension) {
+    return id;
+  }
+  return `${id}${extension.startsWith(".") ? extension : `.${extension}`}`;
+}
+
+async function bestEffortDelete(
+  deleteRelativePathIfExists: ImageCopyFs["deleteRelativePathIfExists"],
+  relativePath: string,
+): Promise<void> {
+  try {
+    await deleteRelativePathIfExists(relativePath);
+  } catch {
+    // Ignore cleanup failures — caller already has the primary error.
+  }
+}
+
+/**
+ * Copy a temporary image URI into `documents/<subdir>/` via injectable FS.
+ * Writes to a `.partial` staging path first, then renames to the final name
+ * so mid-copy failures are unlikely to leave a finished-looking file.
+ * Exported for unit tests.
+ */
+export async function resolveImageCopy(
+  sourceUri: string,
+  subdir: ImagesSubdir,
+  fs: ImageCopyFs,
+  options?: {
+    createFilename?: (sourceUri: string) => string;
+  },
+): Promise<StoredImageRelativePath> {
+  const relativeSubdir = joinDocumentsRelativePath(subdir);
+  if (!relativeSubdir) {
+    throw new Error("Images subdir must not be empty");
+  }
+
+  const filename =
+    options?.createFilename?.(sourceUri) ??
+    createStoredImageFilename(extensionFromUri(sourceUri));
+  const relativePath = joinDocumentsRelativePath(relativeSubdir, filename);
+  const stagingPath = `${relativePath}.partial`;
+
+  await fs.ensureSubdir(relativeSubdir);
+
+  try {
+    await fs.copyUriToRelativePath(sourceUri, stagingPath);
+    await fs.renameRelativePath(stagingPath, filename);
+    return relativePath;
+  } catch (error) {
+    await bestEffortDelete(fs.deleteRelativePathIfExists, stagingPath);
+    await bestEffortDelete(fs.deleteRelativePathIfExists, relativePath);
+    throw error;
+  }
+}
+
+function documentsRelativeParts(relativePath: string): string[] {
+  return joinDocumentsRelativePath(relativePath).split("/").filter(Boolean);
+}
+
+/**
+ * Copy a temporary picker/camera URI into `documents/<subdir>/`.
+ * Returns a documents-relative path suitable for DB storage
+ * (e.g. `plants/ab12….jpg`). Product chooses `subdir`; this helper does not
+ * enforce product-specific names or image count limits.
+ */
+export async function copyImageToDocuments(
+  sourceUri: string,
+  subdir: ImagesSubdir,
+): Promise<StoredImageRelativePath> {
+  const { Directory, File, Paths } = await import("expo-file-system");
+
+  return resolveImageCopy(sourceUri, subdir, {
+    ensureSubdir: (relativeSubdir) => {
+      const dir = new Directory(
+        Paths.document,
+        ...documentsRelativeParts(relativeSubdir),
+      );
+      dir.create({ intermediates: true, idempotent: true });
+    },
+    copyUriToRelativePath: async (fromUri, relativePath) => {
+      const parts = documentsRelativeParts(relativePath);
+      const dest = new File(Paths.document, ...parts);
+      const source = new File(fromUri);
+      await source.copy(dest);
+    },
+    renameRelativePath: (fromRelativePath, toFileName) => {
+      const file = new File(
+        Paths.document,
+        ...documentsRelativeParts(fromRelativePath),
+      );
+      file.rename(toFileName);
+    },
+    deleteRelativePathIfExists: (relativePath) => {
+      const file = new File(
+        Paths.document,
+        ...documentsRelativeParts(relativePath),
+      );
+      if (file.exists) {
+        file.delete();
+      }
+    },
+  });
 }
