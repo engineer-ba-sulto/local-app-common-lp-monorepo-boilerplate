@@ -38,7 +38,7 @@ done（2026-07-23）。
 
 ## 後続チケット
 
-- [LC-005 PostHog・AnalyticsClient](../../todo/2026-07-23_lc_005_posthog_analytics_client.md)（Phase 3・LC-000 依存・並行可）
+- [LC-005 PostHog・AnalyticsClient](./2026-07-23_lc_005_posthog_analytics_client.md)（Phase 3・done）
 - [LC-006 統合検証・README](../../todo/2026-07-23_lc_006_integration_readme.md)（LC-000〜LC-005 完了後）
 
 ## 完了メモ
@@ -61,5 +61,5 @@ done（2026-07-23）。
 
 ### 次の候補
 
-- [LC-005](../../todo/2026-07-23_lc_005_posthog_analytics_client.md) PostHog SDK・`PostHogAnalyticsClient`・同意切替
+- [LC-005](./2026-07-23_lc_005_posthog_analytics_client.md) PostHog SDK・`PostHogAnalyticsClient`・同意切替（done）
 - [LC-006](../../todo/2026-07-23_lc_006_integration_readme.md) 統合検証・README（LC-005 完了後）

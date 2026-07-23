@@ -3,7 +3,7 @@
 - 作成日: 2026-07-22
 - 実装先: `DemoProject/local-app-common-lp-monorepo-boilerplate/`
 - 所有者用意: 一段目完成物の**コピー済み**。エージェントはコピー / `bun init` / `bun create` を再実行しない
-- 状態: 文書作成済み・**LC-000〜LC-004 done**（一段目 BP-008 完了後）
+- 状態: 文書作成済み・**LC-000〜LC-005 done**（一段目 BP-008 完了後）
 - 正本仕様: [仕様書 v1](./local_app_common_lp_monorepo_boilerplate_spec_v1.md)
 - 実装チケット: 本書「11. 実装チケット一覧」（LC-000〜LC-006）
 - 上流: 一段目 `expo-app-lp-monorepo-boilerplate`（同梱外）
@@ -173,7 +173,7 @@ cd local-app-common-lp-monorepo-boilerplate
 | [LC-002](../ticket_management/done/2026-07-23/2026-07-23_lc_002_image_picker_api.md) | 2 | カメラ／ライブラリ選択 API（キャンセル・拒否は通常結果） | LC-001 | 0.25〜0.5日 | 選択成功・キャンセル・拒否を型で表現。`expo-camera` なし | done |
 | [LC-003](../ticket_management/done/2026-07-23/2026-07-23_lc_003_image_copy_save.md) | 2 | 一時 URI → documents 配下コピー保存 API | LC-002 | 0.25〜0.5日 | `subdir` 指定でコピー、失敗時に中途ファイルを残しにくい | done |
 | [LC-004](../ticket_management/done/2026-07-23/2026-07-23_lc_004_image_display_cleanup.md) | 2 | 表示 URI 契約・placeholder・未参照 cleanup | LC-003 | 0.25〜0.5日 | 表示用ヘルパと参照セット渡し cleanup（失敗は best-effort） | done |
-| [LC-005](../ticket_management/todo/2026-07-23_lc_005_posthog_analytics_client.md) | 3 | PostHog SDK・`PostHogAnalyticsClient`・同意切替（製品イベントなし） | LC-000 | 0.5日 | 同意前0、同意後手動 capture、自動収集なし、キーはプレースホルダ | todo |
+| [LC-005](../ticket_management/done/2026-07-23/2026-07-23_lc_005_posthog_analytics_client.md) | 3 | PostHog SDK・`PostHogAnalyticsClient`・同意切替（製品イベントなし） | LC-000 | 0.5日 | 同意前0、同意後手動 capture、自動収集なし、キーはプレースホルダ | done |
 | [LC-006](../ticket_management/todo/2026-07-23_lc_006_integration_readme.md) | 4 | 統合検証・README（一段目差分・製品コピー手順） | LC-000〜LC-005 | 0.25日 | 完了ゲートを満たす | todo |
 
 ### 主な実装対象
