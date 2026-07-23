@@ -37,12 +37,25 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     "expo-router",
     "expo-sqlite",
+    "expo-image",
     [
       "expo-splash-screen",
       {
         backgroundColor: "#208AEF",
         image: "./assets/images/splash-icon.png",
         imageWidth: 76,
+      },
+    ],
+    // 製品コピー時に差し替え可。ドメイン固有文言は二段目では入れない。
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "写真を選択するために、フォトライブラリへのアクセスが必要です。",
+        cameraPermission:
+          "写真を撮影するために、カメラへのアクセスが必要です。",
+        // 静止画のみ。動画録音用マイク権限は不要。
+        microphonePermission: false,
       },
     ],
   ],

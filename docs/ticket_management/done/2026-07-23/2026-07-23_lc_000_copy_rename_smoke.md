@@ -39,7 +39,7 @@ done（2026-07-23）。
 
 ## 後続チケット
 
-- [LC-001 写真依存・config plugin](../../todo/2026-07-23_lc_001_image_deps_plugins.md)
+- [LC-001 写真依存・config plugin](./2026-07-23_lc_001_image_deps_plugins.md)
 - [LC-005 PostHog 輸送層](../../todo/2026-07-23_lc_005_posthog_analytics_client.md)（LC-000 完了後に並行可）
 
 ## 完了メモ
