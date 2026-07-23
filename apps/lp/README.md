@@ -1,43 +1,40 @@
-# Astro Starter Kit: Minimal
+# apps/lp（Astro LP 枠）
+
+App Store 向けランディングページ用の **Astro stub** です。`bun create cloudflare` 済み成果をボイラープレート枠へ寄せた状態で、製品 LP の本実装は後続です。
+
+## いまあるもの
+
+- `src/pages/index.astro` … プレースホルダページ
+- Cloudflare adapter（`@astrojs/cloudflare`）と `wrangler` による配信想定
+
+## 後続で実装すること
+
+製品コピーへ落とすときに次を入れる（本ボイラープレートでは未実装）:
+
+- 製品名・ストア誘導・ASO 向けコピー
+- ストアスクショ・課金説明などの確定文
+- 公開ドメインと Cloudflare 配信方式の確定
+
+## 開発
+
+モノレポルートから:
 
 ```sh
-bun create astro@latest -- --template minimal
+bun run dev:lp
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+または `bun run dev`（mprocs）で `lp` プロセスを起動。
 
-## 🚀 Project Structure
+アプリ単体:
 
-Inside of your Astro project, you'll see the following folders and files:
+| コマンド | 内容 |
+| --- | --- |
+| `bun run dev` | 開発サーバ（既定 `localhost:4321`） |
+| `bun run build` | 本番ビルド |
+| `bun run preview` | ビルド結果のプレビュー |
+| `bun run deploy` | ビルド後に Wrangler でデプロイ |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## 関連
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- ルート [README](../../README.md)
+- 仕様書 §3.3（`apps/lp` は枠のみ）
