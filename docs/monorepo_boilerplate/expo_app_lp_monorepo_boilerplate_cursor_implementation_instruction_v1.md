@@ -3,7 +3,7 @@
 - 作成日: 2026-07-22
 - 実装先: `DemoProject/expo-app-lp-monorepo-boilerplate/`
 - 所有者用意: 仕様書 §2.1 の `bun init` / `bun create` 済み。エージェントはそれらを再実行しない
-- 状態: BP-001 done・以降はチケット順で実装中
+- 状態: BP-001〜BP-007 done・次は BP-008
 - 正本仕様: [仕様書 v1](./expo_app_lp_monorepo_boilerplate_spec_v1.md)
 - 実装チケット: 本書「11. 実装チケット一覧」（BP-001〜BP-008）
 - 下流: 二段目（共通）→ みずどき / 現場日報（同梱外）
@@ -193,7 +193,7 @@ apps/lp = Astro LP の枠（stub のみ）
 | [BP-004](../ticket_management/done/2026-07-23/2026-07-22_bp_004_sp_local_date.md) | 2 | `apps/sp` local-date + unit test | BP-002 | 0.5日 | `YYYY-MM-DD` 境界 test 成功 | done |
 | [BP-005](../ticket_management/done/2026-07-23/2026-07-22_bp_005_sp_drizzle_db.md) | 2 | `apps/sp` Drizzle db・Kit・migration bundle・最小 schema | BP-002 | 0.5〜1日 | 空DBへ migration 後にルート表示 | done |
 | [BP-006](../ticket_management/done/2026-07-23/2026-07-22_bp_006_sp_analytics_noop.md) | 2 | `apps/sp` AnalyticsClient no-op・images/haptics 枠 | BP-003 | 0.5日 | no-op のみ。PostHog SDK 未接続 | done |
-| [BP-007](../ticket_management/todo/2026-07-22_bp_007_lp_astro_stub.md) | 3 | `apps/lp` を create cloudflare 済みから stub・README へ寄せる | BP-001 | 0.5日 | placeholder ページと「後続実装」README | todo |
+| [BP-007](../ticket_management/done/2026-07-23/2026-07-22_bp_007_lp_astro_stub.md) | 3 | `apps/lp` を create cloudflare 済みから stub・README へ寄せる | BP-001 | 0.5日 | placeholder ページと「後続実装」README | done |
 | [BP-008](../ticket_management/todo/2026-07-22_bp_008_integration_readme.md) | 4 | 統合検証・コピー手順 README 完成 | BP-003〜BP-007 | 0.5日 | 完了ゲートを満たす | todo |
 
 ### 主な実装対象
