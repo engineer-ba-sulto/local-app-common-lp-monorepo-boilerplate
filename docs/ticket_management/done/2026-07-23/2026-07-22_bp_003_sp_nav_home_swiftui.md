@@ -49,4 +49,4 @@ done（2026-07-23）。
 - `screens/home/home-screen.ios.tsx`（SwiftUI Host）と default `.tsx`（非 iOS フォールバック）。ルートは `HomeScreen` を描画するだけ。
 - BP-002 の `dependency-smoke` と旧 `app/index.tsx` を削除（ホーム雛形へ差し替え）。
 - 検証: `bun run typecheck:sp` / `bun run check:sp` / `bun run check` 成功。Expo Go 実機確認は所有者向け。
-- 次の候補: [BP-006](../../todo/2026-07-22_bp_006_sp_analytics_noop.md)（依存 BP-003）。並行可: [BP-004](../../todo/2026-07-22_bp_004_sp_local_date.md) / [BP-005](../../todo/2026-07-22_bp_005_sp_drizzle_db.md)。
+- 次の候補: [BP-006](../../todo/2026-07-22_bp_006_sp_analytics_noop.md)（依存 BP-003）。並行可: [BP-004](./2026-07-22_bp_004_sp_local_date.md) / [BP-005](../../todo/2026-07-22_bp_005_sp_drizzle_db.md)。

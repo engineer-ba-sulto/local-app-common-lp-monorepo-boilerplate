@@ -42,7 +42,7 @@ done（2026-07-23）。
 ## 後続チケット
 
 - [BP-003 folder・NativeTabs・SwiftUI ホーム](../../todo/2026-07-22_bp_003_sp_nav_home_swiftui.md)
-- [BP-004 local-date + test](../../todo/2026-07-22_bp_004_sp_local_date.md)
+- [BP-004 local-date + test](./2026-07-22_bp_004_sp_local_date.md)
 - [BP-005 Drizzle db](../../todo/2026-07-22_bp_005_sp_drizzle_db.md)
 
 ## 完了メモ
